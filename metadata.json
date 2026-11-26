@@ -1,0 +1,6 @@
+{
+  "name": "BRAV Chat",
+  "description": "Application de messagerie instantanée sécurisée en temps réel avec appels audio/vidéo WebRTC, partage de médias, localisation et réactions animées.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

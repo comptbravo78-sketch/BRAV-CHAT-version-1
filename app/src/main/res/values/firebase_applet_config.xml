@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="firestore_database_id" translatable="false">ai-studio-android-bravchat-a59c08fd-d746-4b1b-82b9-b5b35a581a65</string>
+    <string name="recaptcha_site_key" translatable="false">6LcM4h8uAAAAAG5N-VENYUCZPGqwygJ0o0rPQGvo</string>
+</resources>

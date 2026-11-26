@@ -1,0 +1,35 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // User profile avatars, covers, and temporary verification selfies (strictly owner-written)
+    match /users/{userId}/{allUserFiles=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.size <= 15 * 1024 * 1024;
+    }
+
+    // Conversation media (authenticated participants)
+    match /conversations/{conversationId}/{allConvFiles=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && request.resource.size <= 25 * 1024 * 1024;
+    }
+
+    // Offers and announcements photos
+    match /offers/{offerId}/{allOfferFiles=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && request.resource.size <= 15 * 1024 * 1024;
+    }
+  }
+}

@@ -1,0 +1,480 @@
+{
+  "entities": {
+    "UserDirectory": {
+      "title": "UserDirectory",
+      "description": "Public directory profile of a BRAV Chat member without exposed PII.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string" },
+        "username": { "type": "string" },
+        "phoneLookupHash": { "type": "string", "description": "SHA-256 hash of normalized phone number for private search" },
+        "emailLookupHash": { "type": "string", "description": "SHA-256 hash of lowercase email for private search" },
+        "bio": { "type": "string" },
+        "locationCity": { "type": "string" },
+        "locationDetails": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "coverUrl": { "type": "string" },
+        "availabilityStatus": { "type": "string", "enum": ["online", "offline", "busy", "dnd", "invisible"] },
+        "isOnline": { "type": "boolean" },
+        "lastSeenAt": { "type": "string", "format": "date-time" },
+        "publicKey": { "type": "string", "description": "Base64 X.509 EC P-256 public key for E2EE" },
+        "role": { "type": "string", "enum": ["user", "provider"] },
+        "isSuspended": { "type": "boolean" },
+        "followersCount": { "type": "integer" },
+        "followingCount": { "type": "integer" },
+        "isPrivateProfile": { "type": "boolean" },
+        "allowPhoneLookup": { "type": "boolean" },
+        "defaultCountryIso": { "type": "string" },
+        "verificationStatus": { "type": "string", "enum": ["none", "not_eligible", "eligible", "awaiting_selfie", "awaiting_payment", "payment_confirmed", "pending", "in_review", "info_required", "verified", "retake_required", "rejected", "suspended", "revoked", "expired"] },
+        "verificationCategory": { "type": "string", "enum": ["public_figure", "business", "professional", "creator", "personal", ""] },
+        "verifiedOrgName": { "type": "string" },
+        "verificationExpiresAtMs": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "createdAt", "updatedAt"]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Private PII and personal settings accessible strictly by the owner.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "phoneVerified": { "type": "boolean" },
+        "securityPinHash": { "type": "string" },
+        "encryptedBackupJson": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "updatedAt"]
+    },
+    "UserDevice": {
+      "title": "UserDevice",
+      "description": "Authorized device session for multi-device sync and remote sign-out.",
+      "type": "object",
+      "properties": {
+        "deviceId": { "type": "string" },
+        "deviceName": { "type": "string" },
+        "platform": { "type": "string" },
+        "revoked": { "type": "boolean" },
+        "lastActiveAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["deviceId", "deviceName", "platform", "revoked"]
+    },
+    "ContactEntry": {
+      "title": "ContactEntry",
+      "description": "Saved contact link under a user's personal address book.",
+      "type": "object",
+      "properties": {
+        "contactUid": { "type": "string" },
+        "alias": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["contactUid", "addedAt"]
+    },
+    "BlockedEntry": {
+      "title": "BlockedEntry",
+      "description": "Blocked user entry.",
+      "type": "object",
+      "properties": {
+        "blockedUid": { "type": "string" },
+        "reason": { "type": "string" },
+        "blockedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["blockedUid", "blockedAt"]
+    },
+    "ConversationPref": {
+      "title": "ConversationPref",
+      "description": "Per-user conversation state (archive, lock, mute, pin, unread, wallpaper, local delete).",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string" },
+        "archived": { "type": "boolean" },
+        "pinned": { "type": "boolean" },
+        "muted": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "markedUnread": { "type": "boolean" },
+        "hiddenLocally": { "type": "boolean" },
+        "wallpaperId": { "type": "string" },
+        "clearedAtMs": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["conversationId", "updatedAt"]
+    },
+    "ContactRequest": {
+      "title": "ContactRequest",
+      "description": "Friend/contact invitation between two BRAV Chat users.",
+      "type": "object",
+      "properties": {
+        "fromUid": { "type": "string" },
+        "fromName": { "type": "string" },
+        "toUid": { "type": "string" },
+        "toName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fromUid", "toUid", "status", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "1-on-1 or group conversation metadata.",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array" },
+        "isGroup": { "type": "boolean" },
+        "groupName": { "type": "string" },
+        "groupDescription": { "type": "string" },
+        "groupAvatarUrl": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "adminIds": { "type": "array" },
+        "inviteCode": { "type": "string" },
+        "lastMessage": { "type": "string" },
+        "lastMessageSenderId": { "type": "string" },
+        "lastMessageType": { "type": "string" },
+        "lastMessageTimestamp": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Real-time message in a conversation with E2EE payload, media, voice, location, and animated reactions.",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "content": { "type": "string" },
+        "messageType": { "type": "string", "enum": ["text", "image", "video", "audio", "voice", "file", "location", "contact"] },
+        "isEncrypted": { "type": "boolean" },
+        "encryptionIv": { "type": "string" },
+        "senderPublicKey": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "sent", "delivered", "read"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["conversationId", "senderId", "receiverId", "messageType", "status", "timestamp"]
+    },
+    "CallRecord": {
+      "title": "CallRecord",
+      "description": "Audio/video WebRTC call record aligned with Cloudflare Worker v3.0.0.",
+      "type": "object",
+      "properties": {
+        "callerId": { "type": "string" },
+        "callerName": { "type": "string" },
+        "callerAvatar": { "type": "string" },
+        "callerUsername": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "receiverName": { "type": "string" },
+        "receiverAvatar": { "type": "string" },
+        "receiverUsername": { "type": "string" },
+        "participantIds": { "type": "array" },
+        "callType": { "type": "string", "enum": ["audio", "video"] },
+        "callSource": { "type": "string", "enum": ["brav_internet", "gsm_carrier"] },
+        "status": { "type": "string", "enum": ["calling", "accepted", "on_hold", "rejected", "ended"] },
+        "lifecycleState": { "type": "string", "enum": ["LAUNCHING", "RINGING", "ACCEPTED", "ACTIVE", "ON_HOLD", "ENDED", "MISSED", "FAILED", "UNAVAILABLE", "CONNECTION_LOST"] },
+        "heldByUid": { "type": "string" },
+        "missed": { "type": "boolean" },
+        "durationSeconds": { "type": "integer" },
+        "hiddenForUsers": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["callerId", "receiverId", "participantIds", "callType", "status", "createdAt"]
+    },
+    "StatusPost": {
+      "title": "StatusPost",
+      "description": "24-hour ephemeral status/story post with likes, futuristic emoji reactions, and comments.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image", "video"] },
+        "text": { "type": "string" },
+        "caption": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "audienceType": { "type": "string", "enum": ["all", "selected"] },
+        "allowedUids": { "type": "array" },
+        "viewerIds": { "type": "array" },
+        "likedByUids": { "type": "array" },
+        "reactions": { "type": "object" },
+        "commentCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "expiresAtMs": { "type": "integer" }
+      },
+      "required": ["userId", "type", "audienceType", "createdAt", "expiresAtMs"]
+    },
+    "StatusComment": {
+      "title": "StatusComment",
+      "description": "Real-time comment and optional futuristic emoji reaction attached to a status.",
+      "type": "object",
+      "properties": {
+        "statusId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorAvatar": { "type": "string" },
+        "text": { "type": "string" },
+        "reactionKey": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["statusId", "authorId", "text", "createdAt"]
+    },
+    "LiveLocationShare": {
+      "title": "LiveLocationShare",
+      "description": "Encrypted real-time GPS location share for interactive map display.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "recipientUids": { "type": "array" },
+        "encryptedCoords": { "type": "string" },
+        "encryptionIv": { "type": "string" },
+        "senderPublicKey": { "type": "string" },
+        "isEncrypted": { "type": "boolean" },
+        "active": { "type": "boolean" },
+        "expiresAtMs": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "recipientUids", "encryptedCoords", "active", "expiresAtMs", "updatedAt"]
+    },
+    "OfferListing": {
+      "title": "OfferListing",
+      "description": "Free community service and job listing compatible with Worker /v1/search.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "locationCity": { "type": "string" },
+        "priceOrSalary": { "type": "string" },
+        "status": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "category", "status", "createdAt"]
+    },
+    "AbuseReport": {
+      "title": "AbuseReport",
+      "description": "User/message/group safety report for moderation.",
+      "type": "object",
+      "properties": {
+        "reporterId": { "type": "string" },
+        "targetUid": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "messageId": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "action_taken", "dismissed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reporterId", "reason", "status", "createdAt"]
+    },
+    "SystemTelemetry": {
+      "title": "SystemTelemetry",
+      "description": "Client diagnostic event for platform health monitoring.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "category": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "category", "message", "createdAt"]
+    },
+    "VerificationRequest": {
+      "title": "VerificationRequest",
+      "description": "Automated BRAV VERIFIED certification case (5,000+ followers, live selfie, 3,600 F CFA / 5.99 USD).",
+      "type": "object",
+      "properties": {
+        "caseNumber": { "type": "string" },
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "username": { "type": "string" },
+        "fullName": { "type": "string" },
+        "category": { "type": "string", "enum": ["public_figure", "business", "professional", "creator", "personal"] },
+        "organizationName": { "type": "string" },
+        "roleOrActivity": { "type": "string" },
+        "country": { "type": "string" },
+        "officialWebsite": { "type": "string" },
+        "justification": { "type": "string" },
+        "followersCountAtRequest": { "type": "integer" },
+        "selfieVerified": { "type": "boolean" },
+        "selfieScore": { "type": "number" },
+        "spoofRisk": { "type": "string" },
+        "selfieStorageKey": { "type": "string" },
+        "selfieConsent": { "type": "boolean" },
+        "termsAccepted": { "type": "boolean" },
+        "paymentTxRef": { "type": "string" },
+        "paymentAmountXof": { "type": "integer" },
+        "paymentCurrency": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "receiptNumber": { "type": "string" },
+        "designerExempt": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["not_eligible", "eligible", "awaiting_selfie", "awaiting_payment", "payment_confirmed", "pending", "in_review", "info_required", "verified", "retake_required", "rejected", "suspended", "revoked", "expired"] },
+        "reviewerNote": { "type": "string" },
+        "reviewedBy": { "type": "string" },
+        "auditTrail": { "type": "array" },
+        "expiresAtMs": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "fullName", "category", "status", "createdAt"]
+    },
+    "CallerReport": {
+      "title": "CallerReport",
+      "description": "Moderated community caller ID report hashed by normalized phone number.",
+      "type": "object",
+      "properties": {
+        "reporterId": { "type": "string" },
+        "phoneLookupHash": { "type": "string" },
+        "maskedNumber": { "type": "string" },
+        "countryIso": { "type": "string" },
+        "category": { "type": "string", "enum": ["telemarketing", "spam", "scam", "business", "safe"] },
+        "label": { "type": "string" },
+        "details": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reporterId", "phoneLookupHash", "category", "status", "createdAt"]
+    },
+    "FollowRequest": {
+      "title": "FollowRequest",
+      "description": "Private-profile subscription request awaiting recipient acceptance.",
+      "type": "object",
+      "properties": {
+        "fromUid": { "type": "string" },
+        "fromName": { "type": "string" },
+        "fromUsername": { "type": "string" },
+        "fromAvatar": { "type": "string" },
+        "toUid": { "type": "string" },
+        "toName": { "type": "string" },
+        "toAvatar": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fromUid", "toUid", "status", "createdAt"]
+    },
+    "InviteLink": {
+      "title": "InviteLink",
+      "description": "Trackable personal invite link without exposed PII.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "inviterUid": { "type": "string" },
+        "inviterDisplayName": { "type": "string" },
+        "inviterAvatarUrl": { "type": "string" },
+        "channel": { "type": "string" },
+        "clicks": { "type": "integer" },
+        "signups": { "type": "integer" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "inviterUid", "active", "createdAt"]
+    },
+    "CallerDirectoryEntry": {
+      "title": "CallerDirectoryEntry",
+      "description": "Verified business/official directory entry hashed by E.164 phone number.",
+      "type": "object",
+      "properties": {
+        "phoneLookupHash": { "type": "string" },
+        "businessName": { "type": "string" },
+        "category": { "type": "string", "enum": ["business", "official", "service", "safe"] },
+        "city": { "type": "string" },
+        "countryIso": { "type": "string" },
+        "verified": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["phoneLookupHash", "businessName", "category", "verified"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserDirectory" },
+      "description": "Public directory profile without exposed PII."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Owner-only PII, phone/email, security PIN, and encrypted backup."
+    },
+    "/users/{userId}/devices/{deviceId}": {
+      "schema": { "$ref": "#/entities/UserDevice" },
+      "description": "Multi-device sessions for remote sign-out."
+    },
+    "/users/{userId}/contacts/{contactUid}": {
+      "schema": { "$ref": "#/entities/ContactEntry" },
+      "description": "Owner's BRAV Chat contacts."
+    },
+    "/users/{userId}/blocked/{blockedUid}": {
+      "schema": { "$ref": "#/entities/BlockedEntry" },
+      "description": "Owner's blocked users."
+    },
+    "/users/{userId}/conversation_prefs/{conversationId}": {
+      "schema": { "$ref": "#/entities/ConversationPref" },
+      "description": "Per-user archive, pin, lock, mute, wallpaper, and local deletion flags."
+    },
+    "/contact_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/ContactRequest" },
+      "description": "Contact invitations between users."
+    },
+    "/follow_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/FollowRequest" },
+      "description": "Private-profile subscription requests."
+    },
+    "/invites/{inviteCode}": {
+      "schema": { "$ref": "#/entities/InviteLink" },
+      "description": "Trackable personal invite links."
+    },
+    "/caller_directory/{phoneHash}": {
+      "schema": { "$ref": "#/entities/CallerDirectoryEntry" },
+      "description": "Verified business and service caller directory."
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "1-on-1 and group conversations."
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Encrypted and real-time chat messages with reactions."
+    },
+    "/calls/{callId}": {
+      "schema": { "$ref": "#/entities/CallRecord" },
+      "description": "WebRTC call records and state."
+    },
+    "/statuses/{statusId}": {
+      "schema": { "$ref": "#/entities/StatusPost" },
+      "description": "24-hour ephemeral statuses."
+    },
+    "/statuses/{statusId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/StatusComment" },
+      "description": "Comments on ephemeral statuses."
+    },
+    "/live_locations/{shareId}": {
+      "schema": { "$ref": "#/entities/LiveLocationShare" },
+      "description": "Encrypted live GPS location shares for real-time map."
+    },
+    "/offers/{offerId}": {
+      "schema": { "$ref": "#/entities/OfferListing" },
+      "description": "Published service listings and announcements."
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/AbuseReport" },
+      "description": "Abuse and spam moderation reports."
+    },
+    "/verification_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/VerificationRequest" },
+      "description": "Blue badge certification applications and admin moderation."
+    },
+    "/caller_reports/{reportId}": {
+      "schema": { "$ref": "#/entities/CallerReport" },
+      "description": "Moderated caller ID safety and business classification reports."
+    },
+    "/system_telemetry/{logId}": {
+      "schema": { "$ref": "#/entities/SystemTelemetry" },
+      "description": "Technical telemetry logs for admin monitoring."
+    }
+  }
+}

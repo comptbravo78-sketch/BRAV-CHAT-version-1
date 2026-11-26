@@ -1,0 +1,52 @@
+name = "bold-darkness-7957"
+main = "worker.js"
+compatibility_date = "2025-10-01"
+account_id = "3ce50d6f3a4a6a4e13db38e2cd79ce7c"
+
+[vars]
+FIREBASE_PROJECT_ID = "brav-chat"
+R2_BUCKET_NAME = "bravchat"
+R2_REGION = "WEUR"
+D1_DATABASE_NAME = "brav_chat"
+SFU_APP_ID = "00e84148168d52e644ef50bc3824ff3b"
+AI_GATEWAY_ID = "brav-chat-gateway"
+AI_DAILY_USER_QUOTA = "250"
+MAX_UPLOAD_MB = "25"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "bravchat"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "brav_chat"
+database_id = "005a0119-2bb4-40ce-a50c-b3c3a461bc19"
+
+# Créez le namespace KV avec: npx wrangler kv namespace create BRAV_KV
+# Puis remplacez l'identifiant ci-dessous avant `npx wrangler deploy`:
+[[kv_namespaces]]
+binding = "KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Créez la file d'attente avec: npx wrangler queues create brav-tasks
+[[queues.producers]]
+binding = "TASKS_QUEUE"
+queue = "brav-tasks"
+
+[[queues.consumers]]
+queue = "brav-tasks"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[durable_objects]
+bindings = [
+  { name = "USER_HUBS", class_name = "UserHub" },
+  { name = "CALL_ROOMS", class_name = "CallRoom" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["UserHub", "CallRoom"]
+
+[ai]
+binding = "AI"
